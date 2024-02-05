@@ -1,93 +1,93 @@
 --Задание 2
 --1)
-select songduration, songname  from song
-where songduration = (select max(songduration) from song);
+SELECT songduration, songname FROM song
+WHERE songduration = (SELECT MAX(songduration) FROM song);
 
 --2)
-select songduration, songname  from song
-where songduration >=  210;
+SELECT songduration, songname FROM song
+WHERE songduration >=  210;
 
 --3)
-select albumname, albumyear  from album
-where albumyear between '2018-01-01' and '2020-01-01';
+SELECT albumname, albumyear FROM album
+WHERE albumyear BETWEEN '2018-01-01' AND '2020-01-01';
 
 --4)
-select artistname from artist
-where artistname not like '% %';
+SELECT artistname FROM artist
+WHERE artistname NOT LIKE '% %';
 
 --5)
-select songname  from song
-where songname like '%my%' or songname like '%мой%';
+SELECT songname FROM song
+WHERE songname LIKE '%my%' or songname like '%мой%';
 
 --Задание 3
 --1)
-select genrename, COUNT(artistname) QTY from genre g
-left join genreartist g2 on g.id = g2.idgenre 
-left join artist a on g2.idartist  = a.id
-group by genrename
-order by COUNT(artistname) desc;
+SELECT genrename, COUNT(artistname) QTY FROM genre AS g
+LEFT JOIN genreartist AS g2 ON g.id = g2.idgenre 
+LEFT JOIN artist AS a ON g2.idartist  = a.id
+GROUP BY genrename
+ORDER BY COUNT(artistname) DESC;
 
 --2) тут 2 решения не знаю какое из них верно
-select albumname, COUNT(songname) QTY from album a
-left join song s on a.id = s.albumid 
-where albumyear between '2019-01-01' and '2020-12-31'
-group by albumname;
+SELECT albumname, COUNT(songname) QTY FROM album AS a
+LEFT JOIN song AS s ON a.id = s.albumid 
+WHERE albumyear BETWEEN '2019-01-01' AND '2020-12-31'
+GROUP BY albumname;
 
-select COUNT(songname) QTY from album a
-left join song s on a.id = s.albumid 
-where albumyear between '2019-01-01' and '2020-12-31';
+SELECT COUNT(songname) QTY FROM album AS a
+LEFT JOIN song AS s ON a.id = s.albumid 
+WHERE albumyear BETWEEN '2019-01-01' AND '2020-12-31';
 
 --3)
-select albumname, avg(songduration) QTY from album a
-left join song s on a.id = s.albumid
-group by albumname
-ORDER BY QTY desc;
+SELECT albumname, AVG(songduration) QTY FROM album AS a
+LEFT JOIN song AS s ON a.id = s.albumid
+GROUP BY albumname
+ORDER BY QTY DESC;
 
 --4)
-select DISTINCT artistname from artist
-where artistname not in (SELECT DISTINCT artistname from artist a
-left join artistalbum a2 on a.id = a2.idartist  
-left join album a3 on a2.idalbum = a3.id
-where albumyear between '2020-01-01' and '2020-12-31')
+SELECT DISTINCT artistname FROM artist
+WHERE artistname NOT IN (SELECT DISTINCT artistname FROM artist AS a
+LEFT JOIN artistalbum AS a2 ON a.id = a2.idartist  
+LEFT JOIN album AS a3 ON a2.idalbum = a3.id
+WHERE albumyear BETWEEN '2020-01-01' AND '2020-12-31');
 
 --5)
-select distinct collectionname from collection c
-left join collectionsong c2 on c.id = c2.idcollection
-left join song s on c2.idsong = s.id 
-left join album a on s.albumid = a.id 
-left join artistalbum a2 on a.id =a2.idalbum
-left join artist a3 on a2.idartist = a3.id
-where artistname like 'Тилль Линдеманн'
+SELECT DISTINCT collectionname FROM collection AS c
+LEFT JOIN collectionsong AS c2 ON c.id = c2.idcollection
+LEFT JOIN song AS s ON c2.idsong = s.id 
+LEFT JOIN album AS a ON s.albumid = a.id 
+LEFT JOIN artistalbum AS a2 on a.id =a2.idalbum
+LEFT JOIN artist AS a3 ON a2.idartist = a3.id
+WHERE artistname LIKE 'Тилль Линдеманн';
  
 --Задание 4
 --1)
-select albumname from album a
-left join artistalbum a1 on a.id  = a1.idalbum
-left join artist a2 on a1.idartist = a2.id
-left join genreartist g on a2.id = g.idartist
-left join genre g1 on g.idgenre = g1.id
-group by albumname
-having count(genrename) > 1;
+SELECT albumname FROM album AS a
+LEFT JOIN artistalbum AS a1 ON a.id  = a1.idalbum
+LEFT JOIN artist AS a2 ON a1.idartist = a2.id
+LEFT JOIN genreartist AS g ON a2.id = g.idartist
+LEFT JOIN genre AS g1 ON g.idgenre = g1.id
+GROUP BY albumname
+HAVING COUNT(genrename) > 1;
 
 --2)
-select songname FROM song s
-left join collectionsong c on s.id = c.idsong 
-left join collection c1 on c.idcollection = c1.id
-where collectionname is NULL
+SELECT songname FROM song AS s
+LEFT JOIN collectionsong AS c ON s.id = c.idsong 
+LEFT JOIN collection AS c1 ON c.idcollection = c1.id
+WHERE collectionname IS NULL;
 
 --3)
-select artistname FROM artist a
-left join artistalbum a1 on a.id = a1.idartist
-left join album a2 on a1.idalbum = a2.id
-left join song s on a2.id = s.albumid
-where songduration = (select min(songduration) from song )
+SELECT artistname FROM artist AS a
+LEFT JOIN artistalbum AS a1 on a.id = a1.idartist
+LEFT JOIN album AS a2 ON a1.idalbum = a2.id
+LEFT JOIN song AS s ON a2.id = s.albumid
+WHERE songduration = (SELECT MIN(songduration) FROM song);
 
 --4)
-select albumname from album a
-left join song s on a.id  = s.albumid
-group by albumname
-having count(songname) = (select count(albumid) from album a
-left join song s on a.id = s.albumid
-group by albumname
-ORDER BY count(albumid)
-limit 1);
+SELECT albumname FROM album AS a
+LEFT JOIN song AS s ON a.id  = s.albumid
+GROUP BY albumname
+HAVING COUNT(songname) = (SELECT COUNT(albumid) FROM album AS a
+LEFT JOIN song AS s ON a.id = s.albumid
+GROUP BY albumname
+ORDER BY COUNT(albumid)
+LIMIT 1);
