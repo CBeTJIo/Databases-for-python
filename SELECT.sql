@@ -44,17 +44,11 @@ group by albumname
 ORDER BY QTY desc;
 
 --4)
-select artistname, albumname, albumyear from artist a
+select DISTINCT artistname from artist
+where artistname not in (SELECT DISTINCT artistname from artist a
 left join artistalbum a2 on a.id = a2.idartist  
 left join album a3 on a2.idalbum = a3.id
-where albumyear not between '2020-01-01' and '2020-12-31' --НАДО ПОНЯТЬ КАК ЭМИНЕМА УДАЛИТЬ
-
-SELECT DISTINCT artistname FROM artist
-WHERE artistname NOT IN (SELECT DISTINCT artistname from artist a
-LEFT JOIN artistalbum a2 ON a.id = a2.idartist
-LEFT JOIN album a3 on a2.idalbum = a3.id
-WHERE albumyear between '2020-01-01' and '2020-12-31');
---ORDER BY artistname;
+where albumyear between '2020-01-01' and '2020-12-31')
 
 --5)
 select distinct collectionname from collection c
@@ -92,4 +86,8 @@ where songduration = (select min(songduration) from song )
 select albumname from album a
 left join song s on a.id  = s.albumid
 group by albumname
-having count(albumname) = (select min(albumid) from song);
+having count(songname) = (select count(albumid) from album a
+left join song s on a.id = s.albumid
+group by albumname
+ORDER BY count(albumid)
+limit 1);
